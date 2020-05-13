@@ -30,6 +30,8 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 		fmt.Fprintln(w, "successfully selected")
 	}
 	defer rows.Close()
+    defer db.Close()
+
 
 	for rows.Next() {
 		var(
@@ -79,6 +81,7 @@ func createBook(w http.ResponseWriter, r *http.Request){
 	 	fmt.Fprintln(w,"d% created successfully",update)
  }
 	defer insert.Close()
+	defer db.Close()
 	
 }
 
@@ -104,6 +107,9 @@ func updateBook(w http.ResponseWriter, r *http.Request){
 	   }else{
 		   fmt.Fprintln(w," Updated successfully",UpdateRecord )
 	   }
+		
+	   defer db.Close()
+
 			   
 }
 
@@ -126,7 +132,9 @@ func deleteBook(w http.ResponseWriter, r *http.Request){
 		if DeleteRecordErr != nil {
 			panic(DeleteRecordErr)
 		}else{fmt.Printf("%d deleted successfully",DeleteRecord)}
-	
+		
+		defer db.Close()
+			
 	
 	}
 
@@ -138,7 +146,6 @@ if err != nil {
 	fmt.Println("The connection to the DB was successfully initialized ")
 }
 
-defer db.Close()
 
 err = db.Ping()
   if err != nil {
