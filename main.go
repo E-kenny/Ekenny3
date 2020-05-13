@@ -19,11 +19,9 @@ type Book struct{
 	Publish_at string `json:"publish_at"`
 }
 
+var db *sql.DB
+
 func loadBooks(w http.ResponseWriter, r *http.Request){
-	db, err := sql.Open("postgres", "user=postgres password=Ekenny2468 host=127.0.0.1 port=5432 dbname=postgres sslmode=disable")
-	if err != nil {
-		panic(err)
-	}
 	var allbooks Book
 	rows, err := db.Query("SELECT * FROM mypostgres")
 	if err != nil {
@@ -64,10 +62,6 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 
 
 func createBook(w http.ResponseWriter, r *http.Request){
-	db, err := sql.Open("postgres", "user=postgres password=Ekenny2468 host=127.0.0.1 port=5432 dbname=postgres sslmode=disable")
-	if err != nil {
-		panic(err)
-	}
 	insert , err := db.Prepare("INSERT INTO mypostgres ($1,$2,$3,$4)") 
 	fmt.Fprintln(w, "successfully created")
 	w.Header().Set("Content-Type","application/json")
@@ -90,11 +84,6 @@ func createBook(w http.ResponseWriter, r *http.Request){
 
 
 func updateBook(w http.ResponseWriter, r *http.Request){
-	db, err := sql.Open("postgres", "user=postgres password=Ekenny2468 host=127.0.0.1 port=5432 dbname=postgres sslmode=disable")
-	if err != nil {
-		panic(err)
-	}
-
 	queries := mux.Vars(r) 
 		fmt.Fprintf(w, "Category: %v", queries["id"])
 	    
@@ -119,11 +108,7 @@ func updateBook(w http.ResponseWriter, r *http.Request){
 }
 
 
-func deleteBook(w http.ResponseWriter, r *http.Request){
-	db, err := sql.Open("postgres", "user=postgres password=Ekenny2468 host=127.0.0.1 port=5432 dbname=postgres sslmode=disable")
-	if err != nil {
-		panic(err)
-	}	
+func deleteBook(w http.ResponseWriter, r *http.Request){	
 		queries := mux.Vars(r) 
 		fmt.Fprintf(w, "Category: %v\n", queries["id"])
 	    
@@ -188,7 +173,7 @@ if err != nil {
 fmt.Println("The table was successfully created")
 
 router :=mux.NewRouter()
-api := r.PathPrefix("/api/v1").Subrouter()
+api := router.PathPrefix("/api/v1").Subrouter()
  api.HandleFunc("/Books",loadBooks).Methods(http.MethodGet)
  api.HandleFunc("/Books",createBook).Methods(http.MethodPost)
  api.HandleFunc("/Books/id/{id}",updateBook).Methods(http.MethodPatch)
