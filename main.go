@@ -138,6 +138,13 @@ func deleteBook(w http.ResponseWriter, r *http.Request){
 	
 	}
 
+	func logger(next http.HandlerFunc)http.HandlerFunc  {
+		return func (w http.ResponseWriter,r *http.Request)  {
+			fmt.Printf("This request was received from %v",r.URL)
+			next(w,r)
+		}
+	}
+
 func main()  {
 	db, err := sql.Open("postgres", "user=postgres password=Ekenny2468 host=127.0.0.1 port=5432 dbname=postgres sslmode=disable")
 if err != nil {
@@ -181,11 +188,10 @@ fmt.Println("The table was successfully created")
 
 router :=mux.NewRouter()
 api := router.PathPrefix("/api/v1").Subrouter()
- api.HandleFunc("/Books",loadBooks).Methods(http.MethodGet)
- api.HandleFunc("/Books",createBook).Methods(http.MethodPost)
- api.HandleFunc("/Books/id/{id}",updateBook).Methods(http.MethodPatch)
- api.HandleFunc("/Books/id/{id}",deleteBook).Methods(http.MethodDelete)
-
+api.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
+api.HandleFunc("/Books",logger(createBook)).Methods(http.MethodPost)
+api.HandleFunc("/Books/id/{id}",logger(updateBook)).Methods(http.MethodPatch)
+api.HandleFunc("/Books/id/{id}",logger(deleteBook)).Methods(http.MethodDelete)
 fmt.Println("server started successfully")
  log.Fatalln(http.ListenAndServe(":8080",router))
 }
