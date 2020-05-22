@@ -22,8 +22,8 @@ type Book struct{
 var db *sql.DB
 
 func loadBooks(w http.ResponseWriter, r *http.Request){
-	var allbooks Book
-	rows, err := db.Query("SELECT * FROM mypostgres")
+	var allbooks = []Book{}
+	rows, err := db.Query("SELECT * FROM bless")
 	if err != nil {
 		panic(err)
 	}else{
@@ -34,20 +34,12 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 
 
 	for rows.Next() {
-		var(
-			id int
-			name string
-			author string
-			publish_at string
-		)
-		err := rows.Scan(&id,&name,&author,&publish_at)
+		book:=Book{}
+		err := rows.Scan(&book.ID,&book.Name,&book.Author,&book.Publish_at)
 		if err != nil {
 			panic(err)
 		}
-		allbooks.ID = id
-		allbooks.Name =name
-		allbooks.Author =author
-		allbooks.Publish_at = publish_at 
+		allbooks = append(allbooks,book)
 
 	}
 
@@ -61,7 +53,6 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 	w.Write(bk)
 	
 }
-
 
 func createBook(w http.ResponseWriter, r *http.Request){
 	insert , err := db.Prepare("INSERT INTO mypostgres ($1,$2,$3,$4)") 
