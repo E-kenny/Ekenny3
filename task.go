@@ -153,30 +153,24 @@ err = db.Ping()
 
   fmt.Println("Successfully connected!")
 
-// DBCreate :=` CREATE  TABLE  mypostgres
-//  (
+DBCreate :=` CREATE  TABLE  bless
+ (
 	  
-// 	id INT,
-// 	name TEXT,
-// 	author TEXT,
-// 	publish_at TEXT UNIQUE NOT NULL
+	id INT,
+	name TEXT,
+	author TEXT,
+	publish_at TEXT UNIQUE NOT NULL
 		  
-//  )
-//  WITH
-// (
-// 	OIDS=FALSE
-// )
-// TABLESPACE pg_default;
-// ALTER TABLE	mypostgres
-// OWNER TO postgres;
-// `
-//  _, err = db.Exec(DBCreate)
-// if err != nil {
-// 	panic(err)
-// }else{
-// 	fmt.Println("The table was successfully created")
-// }
-// fmt.Println("The table was successfully created")
+ )
+
+`
+ _, err = db.Exec(DBCreate)
+if err != nil {
+	panic(err)
+}else{
+	fmt.Println("The table was successfully created")
+}
+fmt.Println("The table was successfully created")
 
 router :=mux.NewRouter()
 router.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
