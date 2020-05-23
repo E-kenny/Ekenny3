@@ -113,7 +113,7 @@ func deleteBook(w http.ResponseWriter, r *http.Request){
 	
 	DeleteStatement := `
 		DELETE bless
-		WHERE ID = &1	
+		WHERE ID = ?	
 	`
 		DeleteResult, DeleteResultErr := db.Exec(DeleteStatement,1)
 		if DeleteResultErr != nil {
@@ -153,24 +153,24 @@ err = db.Ping()
 
   fmt.Println("Successfully connected!")
 
-DBCreate :=` CREATE  TABLE  bless
- (
+// DBCreate :=` CREATE  TABLE  bless
+//  (
 	  
-	id INT,
-	name TEXT,
-	author TEXT,
-	publish_at TEXT UNIQUE NOT NULL
+// 	id INT,
+// 	name TEXT,
+// 	author TEXT,
+// 	publish_at TEXT UNIQUE NOT NULL
 		  
- )
+//  )
 
-`
- _, err = db.Exec(DBCreate)
-if err != nil {
-	panic(err)
-}else{
-	fmt.Println("The table was successfully created")
-}
-fmt.Println("The table was successfully created")
+//`
+//  _, err = db.Exec(DBCreate)
+// if err != nil {
+// 	panic(err)
+// }else{
+// 	fmt.Println("The table was successfully created")
+// }
+
 
 router :=mux.NewRouter()
 router.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
