@@ -72,60 +72,47 @@ func createBook(w http.ResponseWriter, r *http.Request){
 	 }else {
 	 	fmt.Fprintln(w,"d% created successfully",update)
  }
-	defer insert.Close()
-	defer db.Close()
+	//defer insert.Close()
+	//defer db.Close()
 	
 }
 
 
 func updateBook(w http.ResponseWriter, r *http.Request){
-	queries := mux.Vars(r) 
-		fmt.Fprintf(w, "Category: %v", queries["id"])
+	queries := mux.Vars(r)["id"] 
+		fmt.Fprintf(w, "Category: %v\n", queries)
 	    
 
-	UpdateStatement := `
-	   UPDATE bless
-	   SET Name = &1
-	   WHERE ID = &2	
-   `
-	   UpdateResult, UpdateResultErr := db.Exec(UpdateStatement,"Mathew",1)
-	   if UpdateResultErr != nil {
-		   panic(UpdateResultErr)
-
-	   }
-	   UpdateRecord, UpdateRecordErr := UpdateResult.RowsAffected()
-	   if UpdateRecordErr != nil {
-		   panic(UpdateRecordErr)
-	   }else{
-		   fmt.Fprintln(w," Updated successfully",UpdateRecord )
-	   }
+		UpdateStatement :="UPDATE  bless SET  name=?,author=?,publish_at=? WHERE id=?"	
+	
+		UpdateResult, UpdateResultErr := db.Prepare(UpdateStatement)
+		if UpdateResultErr != nil {
+			panic(UpdateResultErr)
+		}
+		UpdateResult.Exec("ekenny","dragon","02-23-2020",queries)
 		
-	   defer db.Close()
+		fmt.Fprintf(w,"query %v updated successfully",queries)		
+	  // defer db.Close()
 
 			   
 }
 
 
 func deleteBook(w http.ResponseWriter, r *http.Request){	
-		queries := mux.Vars(r) 
-		fmt.Fprintf(w, "Category: %v\n", queries["id"])
+		queries := mux.Vars(r)["id"]
+		fmt.Fprintf(w, "Category: %v\n", queries)
 	    
 	
-	DeleteStatement := `
-		DELETE bless
-		WHERE ID = ?	
-	`
-		DeleteResult, DeleteResultErr := db.Exec(DeleteStatement,1)
+	DeleteStatement :="DELETE FROM bless WHERE id =?"	
+	
+		DeleteResult, DeleteResultErr := db.Prepare(DeleteStatement)
 		if DeleteResultErr != nil {
 			panic(DeleteResultErr)
-
 		}
-		DeleteRecord, DeleteRecordErr := DeleteResult.RowsAffected()
-		if DeleteRecordErr != nil {
-			panic(DeleteRecordErr)
-		}else{fmt.Printf("%d deleted successfully",DeleteRecord)}
+		DeleteResult.Exec(queries)
 		
-		defer db.Close()
+		fmt.Fprintf(w,"query %v deleted successfully",queries)
+		//defer db.Close()
 			
 	
 	}
