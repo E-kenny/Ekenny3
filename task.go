@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
-
 	"github.com/gorilla/mux"
 	_"github.com/go-sql-driver/mysql"
 
@@ -55,28 +53,22 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 	
 }
 
+
 func createBook(w http.ResponseWriter, r *http.Request){
-	insert , err := db.Prepare("INSERT INTO bless ($1,$2,$3,$4)") 
-	fmt.Fprintln(w, "successfully created")
-	w.Header().Set("Content-Type","application/json")
-	if err != nil {
-		panic(err)
-	}else{
-		fmt.Fprintln(w, "successfully created")
-
-	}
-	  
-	update , err := insert.Exec(1,"Ekene","Alchemist",time.Now().String())
-	 if err != nil {
-	 	panic(err)
-	 }else {
-	 	fmt.Fprintln(w,"d% created successfully",update)
- }
-	//defer insert.Close()
-	//defer db.Close()
+	queries := mux.Vars(r)["id"] 
+		fmt.Fprintf(w, "Category: %v\n", queries)
+	    
 	
-}
-
+	insert, err := db.Prepare("INSERT INTO bless VALUES (?,?,?,?)")
+	insert.Exec(queries,"second","Alchemist","01-11-2020")
+	 if err != nil {
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+		}
+	//defer insert.Close()
+		fmt.Fprintf(w, "Record Updated!")
+	}
+	
 
 func updateBook(w http.ResponseWriter, r *http.Request){
 	queries := mux.Vars(r)["id"] 
@@ -161,7 +153,7 @@ err = db.Ping()
 
 router :=mux.NewRouter()
 router.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
-router.HandleFunc("/Books",logger(createBook)).Methods(http.MethodPost)
+router.HandleFunc("/Books/id/{id}",logger(createBook)).Methods(http.MethodPost)
 router.HandleFunc("/Books/id/{id}",logger(updateBook)).Methods(http.MethodPatch)
 router.HandleFunc("/Books/id/{id}",logger(deleteBook)).Methods(http.MethodDelete)
 fmt.Println("server started successfully")
