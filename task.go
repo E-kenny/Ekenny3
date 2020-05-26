@@ -28,8 +28,8 @@ func loadBooks(w http.ResponseWriter, r *http.Request){
 	}else{
 		fmt.Fprintln(w, "successfully selected")
 	}
-	defer rows.Close()
-    defer db.Close()
+	//defer rows.Close()
+    //defer db.Close()
 
 
 	for rows.Next() {
@@ -152,10 +152,12 @@ err = db.Ping()
 
 
 router :=mux.NewRouter()
-router.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
-router.HandleFunc("/Books/id/{id}",logger(createBook)).Methods(http.MethodPost)
-router.HandleFunc("/Books/id/{id}",logger(updateBook)).Methods(http.MethodPatch)
-router.HandleFunc("/Books/id/{id}",logger(deleteBook)).Methods(http.MethodDelete)
+api := router.PathPrefix("/api/v1").Subrouter()
+
+api.HandleFunc("/Books",logger(loadBooks)).Methods(http.MethodGet)
+api.HandleFunc("/Books/id/{id}",logger(createBook)).Methods(http.MethodPost)
+api.HandleFunc("/Books/id/{id}",logger(updateBook)).Methods(http.MethodPatch)
+api.HandleFunc("/Books/id/{id}",logger(deleteBook)).Methods(http.MethodDelete)
 fmt.Println("server started successfully")
  log.Fatalln(http.ListenAndServe(":8080",router))
 }
